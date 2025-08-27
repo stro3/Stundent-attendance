@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect } from 'react';
@@ -31,7 +32,7 @@ export default function ReportsView() {
 
     const totalPossibleDays = new Set(records.map(r => r.date)).size;
     if (totalPossibleDays === 0) {
-      return { overallPercentage: 0, studentStats: [] };
+      return { overallPercentage: 0, studentStats: students.map(s => ({...s, presentDays: 0, totalDays: 0, percentage: 0})).sort((a,b) => a.name.localeCompare(b.name)) };
     }
 
     const totalPresents = records.filter(r => r.status === 'Present').length;

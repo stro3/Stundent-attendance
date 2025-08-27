@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,7 +29,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "../ui/skeleton";
 
 const addStudentSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),

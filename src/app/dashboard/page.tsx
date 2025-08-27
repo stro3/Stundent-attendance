@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -175,12 +176,12 @@ export default function DashboardPage() {
             <CardDescription>Get started with your daily tasks.</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex flex-col justify-center gap-4">
-            <Link href="/dashboard/attendance" passHref>
+            <Link href="/dashboard/attendance">
               <Button size="lg" className="w-full">
                 Take Today&apos;s Attendance <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <Link href="/dashboard/logs" passHref>
+            <Link href="/dashboard/logs">
               <Button size="lg" variant="secondary" className="w-full">
                 View Attendance Logs
               </Button>
