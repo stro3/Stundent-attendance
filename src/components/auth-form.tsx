@@ -57,52 +57,51 @@ export default function AuthForm() {
 
   function onSubmit(values: FormValues) {
     setIsLoading(true);
-    setTimeout(() => {
-        if (isSignUp) {
-            const existingUser = users.find(u => u.email === values.email);
-            if (existingUser) {
-                toast({
-                    variant: "destructive",
-                    title: "Sign Up Failed",
-                    description: "A user with this email already exists.",
-                });
-                setIsLoading(false);
-                return;
-            }
-
-            const newUser: User = {
-                name: values.name!,
-                email: values.email,
-                password: values.password,
-            };
-            setUsers([...users, newUser]);
-
-             toast({
-                title: "Sign Up Successful",
-                description: "Your account has been created. Please log in.",
-            });
-            setIsSignUp(false);
-            form.reset();
-            setIsLoading(false);
-        } else {
-            const user = users.find(u => u.email === values.email && u.password === values.password);
-
-             if (user) {
-                toast({
-                title: "Login Successful",
-                description: "Welcome back! Redirecting to your dashboard.",
-                });
-                router.push("/dashboard");
-            } else {
-                toast({
+    
+    if (isSignUp) {
+        const existingUser = users.find(u => u.email === values.email);
+        if (existingUser) {
+            toast({
                 variant: "destructive",
-                title: "Login Failed",
-                description: "Invalid email or password. Please try again.",
-                });
-                setIsLoading(false);
-            }
+                title: "Sign Up Failed",
+                description: "A user with this email already exists.",
+            });
+            setIsLoading(false);
+            return;
         }
-    }, 1000);
+
+        const newUser: User = {
+            name: values.name!,
+            email: values.email,
+            password: values.password,
+        };
+        setUsers([...users, newUser]);
+
+         toast({
+            title: "Sign Up Successful",
+            description: "Your account has been created. Please log in.",
+        });
+        setIsSignUp(false);
+        form.reset();
+        setIsLoading(false);
+    } else {
+        const user = users.find(u => u.email === values.email && u.password === values.password);
+
+         if (user) {
+            toast({
+            title: "Login Successful",
+            description: "Welcome back! Redirecting to your dashboard.",
+            });
+            router.push("/dashboard");
+        } else {
+            toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: "Invalid email or password. Please try again.",
+            });
+            setIsLoading(false);
+        }
+    }
   }
 
   const toggleForm = () => {
