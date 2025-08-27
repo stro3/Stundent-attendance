@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import Link from 'next/link';
 import { useLocalStorage } from "@/hooks/use-local-storage";
@@ -44,7 +44,7 @@ export default function AuthForm() {
     { name: "Teacher", email: "teacher@vidya.com", password: "password" },
   ]);
 
-  const formSchema = isSignUp ? signUpSchema : loginSchema;
+  const formSchema = useMemo(() => isSignUp ? signUpSchema : loginSchema, [isSignUp]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -61,7 +61,7 @@ export default function AuthForm() {
         email: "",
         password: ""
     });
-  }, [isSignUp]);
+  }, [isSignUp, form]);
 
 
   function onSubmit(values: FormValues) {
