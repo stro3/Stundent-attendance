@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import Link from 'next/link';
 import { useLocalStorage } from "@/hooks/use-local-storage";
@@ -55,15 +55,6 @@ export default function AuthForm() {
     },
   });
 
-  useEffect(() => {
-    form.reset({
-        name: "",
-        email: "",
-        password: ""
-    });
-  }, [isSignUp]);
-
-
   function onSubmit(values: FormValues) {
     setIsLoading(true);
     setTimeout(() => {
@@ -91,6 +82,7 @@ export default function AuthForm() {
                 description: "Your account has been created. Please log in.",
             });
             setIsSignUp(false);
+            form.reset();
             setIsLoading(false);
         } else {
             const user = users.find(u => u.email === values.email && u.password === values.password);
@@ -115,6 +107,11 @@ export default function AuthForm() {
 
   const toggleForm = () => {
       setIsSignUp(!isSignUp);
+      form.reset({
+        name: "",
+        email: "",
+        password: ""
+      });
   }
 
   return (
