@@ -61,7 +61,7 @@ export default function AuthForm() {
         email: "",
         password: ""
     });
-  }, [isSignUp, form.reset]);
+  }, [isSignUp, form]);
 
 
   function onSubmit(values: FormValues) {
