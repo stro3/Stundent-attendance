@@ -29,7 +29,7 @@ export function Nav() {
     <SidebarMenu>
       {links.map((link) => (
         <SidebarMenuItem key={link.href}>
-          <Link href={link.href} passHref legacyBehavior>
+          <Link href={link.href}>
             <SidebarMenuButton
               isActive={pathname === link.href}
               tooltip={{ children: link.label, side: "right", align: "center" }}
