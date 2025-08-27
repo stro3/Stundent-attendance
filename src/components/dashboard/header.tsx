@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { LogOut, User } from "lucide-react";
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-export function Header() {
+function HeaderComponent() {
   const router = useRouter();
   const { toast } = useToast();
 
@@ -61,3 +62,5 @@ export function Header() {
     </header>
   );
 }
+
+export const Header = React.memo(HeaderComponent);

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { usePathname } from "next/navigation";
 import {
   SidebarMenu,
@@ -22,14 +23,14 @@ const links = [
   { href: "/dashboard/reports", label: "Reports", icon: BarChart2 },
 ];
 
-export function Nav() {
+function NavComponent() {
   const pathname = usePathname();
 
   return (
     <SidebarMenu>
       {links.map((link) => (
         <SidebarMenuItem key={link.href}>
-          <Link href={link.href}>
+          <Link href={link.href} passHref>
             <SidebarMenuButton
               isActive={pathname === link.href}
               tooltip={{ children: link.label, side: "right", align: "center" }}
@@ -44,7 +45,7 @@ export function Nav() {
   );
 }
 
-export function SidebarHeaderContent() {
+function SidebarHeaderContentComponent() {
   return (
     <div className="flex items-center gap-2 p-2">
        <BookOpenCheck className="w-8 h-8 text-primary" />
@@ -54,3 +55,6 @@ export function SidebarHeaderContent() {
     </div>
   )
 }
+
+export const Nav = React.memo(NavComponent);
+export const SidebarHeaderContent = React.memo(SidebarHeaderContentComponent);
