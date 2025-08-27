@@ -19,6 +19,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import Link from 'next/link';
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import type { User } from "@/lib/types";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -38,6 +40,9 @@ export default function AuthForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [users, setUsers] = useLocalStorage<User[]>("users", [
+    { name: "Teacher", email: "teacher@vidya.com", password: "password" },
+  ]);
 
   const formSchema = isSignUp ? signUpSchema : loginSchema;
 
@@ -61,9 +66,26 @@ export default function AuthForm() {
 
   function onSubmit(values: FormValues) {
     setIsLoading(true);
-    // Simulate API call
     setTimeout(() => {
         if (isSignUp) {
+            const existingUser = users.find(u => u.email === values.email);
+            if (existingUser) {
+                toast({
+                    variant: "destructive",
+                    title: "Sign Up Failed",
+                    description: "A user with this email already exists.",
+                });
+                setIsLoading(false);
+                return;
+            }
+
+            const newUser: User = {
+                name: values.name!,
+                email: values.email,
+                password: values.password,
+            };
+            setUsers([...users, newUser]);
+
              toast({
                 title: "Sign Up Successful",
                 description: "Your account has been created. Please log in.",
@@ -71,7 +93,9 @@ export default function AuthForm() {
             setIsSignUp(false);
             setIsLoading(false);
         } else {
-             if (values.email === "teacher@vidya.com" && values.password === "password") {
+            const user = users.find(u => u.email === values.email && u.password === values.password);
+
+             if (user) {
                 toast({
                 title: "Login Successful",
                 description: "Welcome back! Redirecting to your dashboard.",
@@ -118,7 +142,7 @@ export default function AuthForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="teacher@vidya.com" {...field} />
+                <Input placeholder={isSignUp ? "your.email@example.com" : "teacher@vidya.com"} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -8,3 +8,9 @@ export interface AttendanceRecord {
   studentId: string;
   status: 'Present' | 'Absent';
 }
+
+export interface User {
+  name: string;
+  email: string;
+  password?: string;
+}
