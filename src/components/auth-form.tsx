@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import Link from 'next/link';
 
@@ -31,6 +31,7 @@ const signUpSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
+type FormValues = z.infer<typeof loginSchema> & Partial<z.infer<typeof signUpSchema>>;
 
 export default function AuthForm() {
   const { toast } = useToast();
@@ -40,16 +41,25 @@ export default function AuthForm() {
 
   const formSchema = isSignUp ? signUpSchema : loginSchema;
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
-      ...(isSignUp && { name: "" }),
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  useEffect(() => {
+    form.reset({
+        name: "",
+        email: "",
+        password: ""
+    });
+  }, [isSignUp, form]);
+
+
+  function onSubmit(values: FormValues) {
     setIsLoading(true);
     // Simulate API call
     setTimeout(() => {
@@ -60,7 +70,6 @@ export default function AuthForm() {
             });
             setIsSignUp(false);
             setIsLoading(false);
-            form.reset();
         } else {
              if (values.email === "teacher@vidya.com" && values.password === "password") {
                 toast({
@@ -82,7 +91,6 @@ export default function AuthForm() {
 
   const toggleForm = () => {
       setIsSignUp(!isSignUp);
-      form.reset();
   }
 
   return (
