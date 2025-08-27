@@ -56,7 +56,8 @@ export default function AttendanceForm() {
     reader.onload = async () => {
       const photoDataUri = reader.result as string;
       try {
-        const response = await markAttendanceWithFaceRecognition({ photoDataUri });
+        const studentRoster = students.map(s => s.name);
+        const response = await markAttendanceWithFaceRecognition({ photoDataUri, studentRoster });
         setResult(response);
       } catch (err) {
         setError("Failed to process the image. Please try again.");
