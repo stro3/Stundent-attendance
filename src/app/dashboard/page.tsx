@@ -10,38 +10,91 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import { DEFAULT_STUDENTS } from '@/lib/data';
 import type { AttendanceRecord, Student } from '@/lib/types';
 import { format, subDays } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DashboardPage() {
   const [attendanceRecords] = useLocalStorage<AttendanceRecord[]>('attendanceRecords', []);
   const [students] = useLocalStorage<Student[]>('students', DEFAULT_STUDENTS);
   const [todayStats, setTodayStats] = useState({ present: 0, absent: 0 });
   const [weekData, setWeekData] = useState<any[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const today = format(new Date(), 'yyyy-MM-dd');
-    const todayRecords = attendanceRecords.filter(rec => rec.date === today);
-    const present = todayRecords.filter(r => r.status === 'Present').length;
-    const absent = students.length - present;
-    setTodayStats({ present, absent });
+    setIsClient(true);
+  }, []);
 
-    const last7Days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), i)).reverse();
-    const chartData = last7Days.map(day => {
-      const dateStr = format(day, 'yyyy-MM-dd');
-      const dayRecords = attendanceRecords.filter(rec => rec.date === dateStr);
-      const presentCount = dayRecords.filter(r => r.status === 'Present').length;
-      return {
-        name: format(day, 'EEE'),
-        date: format(day, 'MMM d'),
-        present: presentCount,
-        absent: students.length - presentCount,
-      };
-    });
-    setWeekData(chartData);
+  useEffect(() => {
+    if (isClient) {
+      const today = format(new Date(), 'yyyy-MM-dd');
+      const todayRecords = attendanceRecords.filter(rec => rec.date === today);
+      const present = todayRecords.filter(r => r.status === 'Present').length;
+      const absent = students.length - present;
+      setTodayStats({ present, absent });
 
-  }, [attendanceRecords, students]);
+      const last7Days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), i)).reverse();
+      const chartData = last7Days.map(day => {
+        const dateStr = format(day, 'yyyy-MM-dd');
+        const dayRecords = attendanceRecords.filter(rec => rec.date === dateStr);
+        const presentCount = dayRecords.filter(r => r.status === 'Present').length;
+        return {
+          name: format(day, 'EEE'),
+          date: format(day, 'MMM d'),
+          present: presentCount,
+          absent: students.length - presentCount,
+        };
+      });
+      setWeekData(chartData);
+    }
+  }, [attendanceRecords, students, isClient]);
 
   const totalStudents = students.length;
   const attendancePercentage = totalStudents > 0 ? (todayStats.present / totalStudents) * 100 : 0;
+  
+  if (!isClient) {
+     return (
+        <div className="flex flex-col gap-8">
+            <div>
+                <h1 className="text-3xl font-bold tracking-tight font-headline">Dashboard</h1>
+                <p className="text-muted-foreground">Overview of school attendance.</p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {[...Array(4)].map((_, i) => (
+                    <Card key={i}>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <Skeleton className="h-4 w-1/2" />
+                            <Skeleton className="h-4 w-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <Skeleton className="h-8 w-1/3 mb-1" />
+                            <Skeleton className="h-3 w-full" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+            <div className="grid gap-4 lg:grid-cols-2">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Weekly Attendance</CardTitle>
+                        <CardDescription>Attendance trends for the last 7 days.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-[300px] w-full">
+                       <Skeleton className="h-full w-full" />
+                    </CardContent>
+                </Card>
+                 <Card className="flex flex-col">
+                    <CardHeader>
+                        <CardTitle>Quick Actions</CardTitle>
+                        <CardDescription>Get started with your daily tasks.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow flex flex-col justify-center gap-4">
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8">

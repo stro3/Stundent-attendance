@@ -24,6 +24,7 @@ import { DEFAULT_STUDENTS } from '@/lib/data';
 import type { AttendanceRecord, Student } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { Card, CardContent } from '../ui/card';
+import { Skeleton } from '../ui/skeleton';
 
 const RECORDS_PER_PAGE = 10;
 
@@ -33,6 +34,11 @@ export default function AttendanceLogsTable() {
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [studentFilter, setStudentFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const studentMap = useMemo(() => new Map(students.map(s => [s.id, s.name])), [students]);
   
@@ -57,6 +63,37 @@ export default function AttendanceLogsTable() {
   useEffect(() => {
     setCurrentPage(1);
   }, [dateFilter, studentFilter]);
+
+  if (!isClient) {
+    return (
+      <Card>
+        <CardContent className="p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row gap-4 mb-4">
+            <Skeleton className="h-10 w-full sm:w-[180px]" />
+            <Skeleton className="h-10 w-full sm:w-[180px]" />
+          </div>
+          <div className="border rounded-md">
+             <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Student</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell colSpan={3} className="h-24 text-center">
+                    Loading...
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

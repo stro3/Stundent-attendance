@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2, UserPlus, Users } from "lucide-react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import type { Student } from "@/lib/types";
@@ -28,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "../ui/skeleton";
 
 const addStudentSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -39,6 +40,11 @@ export default function StudentManagement() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [students, setStudents] = useLocalStorage<Student[]>("students", DEFAULT_STUDENTS);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const form = useForm<AddStudentFormValues>({
     resolver: zodResolver(addStudentSchema),
@@ -130,7 +136,13 @@ export default function StudentManagement() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {students.length > 0 ? (
+                {!isClient ? (
+                   <TableRow>
+                    <TableCell colSpan={2} className="h-24 text-center">
+                     Loading students...
+                    </TableCell>
+                  </TableRow>
+                ) : students.length > 0 ? (
                   students.map((student) => (
                     <TableRow key={student.id}>
                       <TableCell className="font-mono text-muted-foreground">{student.id}</TableCell>

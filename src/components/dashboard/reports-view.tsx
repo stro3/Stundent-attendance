@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -14,13 +14,21 @@ import {
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { DEFAULT_STUDENTS } from '@/lib/data';
 import type { AttendanceRecord, Student } from '@/lib/types';
-import { School, TrendingUp, User, UserCheck } from 'lucide-react';
+import { School, TrendingUp } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
 
 export default function ReportsView() {
   const [records] = useLocalStorage<AttendanceRecord[]>('attendanceRecords', []);
   const [students] = useLocalStorage<Student[]>("students", DEFAULT_STUDENTS);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const reportData = useMemo(() => {
+    if (!isClient) return { overallPercentage: 0, studentStats: [] };
+
     const totalPossibleDays = new Set(records.map(r => r.date)).size;
     if (totalPossibleDays === 0) {
       return { overallPercentage: 0, studentStats: [] };
@@ -43,7 +51,37 @@ export default function ReportsView() {
     }).sort((a,b) => b.percentage - a.percentage);
 
     return { overallPercentage, studentStats };
-  }, [records, students]);
+  }, [records, students, isClient]);
+
+  if (!isClient) {
+    return (
+        <div className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {[...Array(2)].map((_, i) => (
+                     <Card key={i}>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <Skeleton className="h-4 w-1/2" />
+                            <Skeleton className="h-4 w-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <Skeleton className="h-8 w-1/3 mb-1" />
+                            <Skeleton className="h-3 w-full" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Student Attendance Summary</CardTitle>
+                    <CardDescription>Individual attendance rates for all students.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                   <Skeleton className="h-64 w-full" />
+                </CardContent>
+            </Card>
+        </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
