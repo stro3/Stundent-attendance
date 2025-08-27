@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -17,7 +18,7 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
     }
   }, [initialValue, key]);
 
-  const [storedValue, setStoredValue] = useState<T>(readValue);
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
 
   const setValue = (value: T | ((val: T) => T)) => {
     if (typeof window == 'undefined') {
@@ -31,14 +32,16 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
       window.localStorage.setItem(key, JSON.stringify(newValue));
       setStoredValue(newValue);
       window.dispatchEvent(new Event("local-storage"));
-    } catch (error) {
+    } catch (error)
+      {
       console.warn(`Error setting localStorage key “${key}”:`, error);
     }
   };
 
   useEffect(() => {
     setStoredValue(readValue());
-  }, [readValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   useEffect(() => {
     const handleStorageChange = () => {
