@@ -27,6 +27,13 @@ function HeaderComponent() {
     });
     router.push("/");
   };
+  
+  const handleNotImplemented = () => {
+    toast({
+      title: "Feature not implemented",
+      description: "This functionality is not yet available.",
+    });
+  };
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
@@ -49,8 +56,8 @@ function HeaderComponent() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem disabled>Profile</DropdownMenuItem>
-            <DropdownMenuItem disabled>Settings</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleNotImplemented}>Profile</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleNotImplemented}>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/10">
               <LogOut className="mr-2 h-4 w-4" />

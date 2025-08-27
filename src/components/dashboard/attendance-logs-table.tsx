@@ -20,8 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { ALL_STUDENTS } from '@/lib/data';
-import type { AttendanceRecord } from '@/lib/types';
+import { DEFAULT_STUDENTS } from '@/lib/data';
+import type { AttendanceRecord, Student } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { Card, CardContent } from '../ui/card';
 
@@ -29,11 +29,12 @@ const RECORDS_PER_PAGE = 10;
 
 export default function AttendanceLogsTable() {
   const [records] = useLocalStorage<AttendanceRecord[]>('attendanceRecords', []);
+  const [students] = useLocalStorage<Student[]>("students", DEFAULT_STUDENTS);
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [studentFilter, setStudentFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const studentMap = useMemo(() => new Map(ALL_STUDENTS.map(s => [s.id, s.name])), []);
+  const studentMap = useMemo(() => new Map(students.map(s => [s.id, s.name])), [students]);
   
   const uniqueDates = useMemo(() => {
     const dates = new Set(records.map(r => r.date));
@@ -78,7 +79,7 @@ export default function AttendanceLogsTable() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Students</SelectItem>
-              {ALL_STUDENTS.map(student => (
+              {students.map(student => (
                 <SelectItem key={student.id} value={student.id}>{student.name}</SelectItem>
               ))}
             </SelectContent>

@@ -12,12 +12,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { ALL_STUDENTS } from '@/lib/data';
-import type { AttendanceRecord } from '@/lib/types';
+import { DEFAULT_STUDENTS } from '@/lib/data';
+import type { AttendanceRecord, Student } from '@/lib/types';
 import { School, TrendingUp, User, UserCheck } from 'lucide-react';
 
 export default function ReportsView() {
   const [records] = useLocalStorage<AttendanceRecord[]>('attendanceRecords', []);
+  const [students] = useLocalStorage<Student[]>("students", DEFAULT_STUDENTS);
 
   const reportData = useMemo(() => {
     const totalPossibleDays = new Set(records.map(r => r.date)).size;
@@ -26,10 +27,10 @@ export default function ReportsView() {
     }
 
     const totalPresents = records.filter(r => r.status === 'Present').length;
-    const totalPossibleAttendances = ALL_STUDENTS.length * totalPossibleDays;
+    const totalPossibleAttendances = students.length * totalPossibleDays;
     const overallPercentage = totalPossibleAttendances > 0 ? (totalPresents / totalPossibleAttendances) * 100 : 0;
 
-    const studentStats = ALL_STUDENTS.map(student => {
+    const studentStats = students.map(student => {
       const studentRecords = records.filter(r => r.studentId === student.id);
       const presentDays = studentRecords.filter(r => r.status === 'Present').length;
       const percentage = totalPossibleDays > 0 ? (presentDays / totalPossibleDays) * 100 : 0;
@@ -42,7 +43,7 @@ export default function ReportsView() {
     }).sort((a,b) => b.percentage - a.percentage);
 
     return { overallPercentage, studentStats };
-  }, [records]);
+  }, [records, students]);
 
   return (
     <div className="space-y-6">

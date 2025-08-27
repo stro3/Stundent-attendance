@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Users, UserCheck, UserX, Percent } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { ALL_STUDENTS } from '@/lib/data';
-import type { AttendanceRecord } from '@/lib/types';
+import { DEFAULT_STUDENTS } from '@/lib/data';
+import type { AttendanceRecord, Student } from '@/lib/types';
 import { format, subDays } from 'date-fns';
 
 export default function DashboardPage() {
   const [attendanceRecords] = useLocalStorage<AttendanceRecord[]>('attendanceRecords', []);
+  const [students] = useLocalStorage<Student[]>('students', DEFAULT_STUDENTS);
   const [todayStats, setTodayStats] = useState({ present: 0, absent: 0 });
   const [weekData, setWeekData] = useState<any[]>([]);
 
@@ -20,7 +21,7 @@ export default function DashboardPage() {
     const today = format(new Date(), 'yyyy-MM-dd');
     const todayRecords = attendanceRecords.filter(rec => rec.date === today);
     const present = todayRecords.filter(r => r.status === 'Present').length;
-    const absent = ALL_STUDENTS.length - present;
+    const absent = students.length - present;
     setTodayStats({ present, absent });
 
     const last7Days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), i)).reverse();
@@ -32,14 +33,14 @@ export default function DashboardPage() {
         name: format(day, 'EEE'),
         date: format(day, 'MMM d'),
         present: presentCount,
-        absent: ALL_STUDENTS.length - presentCount,
+        absent: students.length - presentCount,
       };
     });
     setWeekData(chartData);
 
-  }, [attendanceRecords]);
+  }, [attendanceRecords, students]);
 
-  const totalStudents = ALL_STUDENTS.length;
+  const totalStudents = students.length;
   const attendancePercentage = totalStudents > 0 ? (todayStats.present / totalStudents) * 100 : 0;
 
   return (

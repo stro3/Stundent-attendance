@@ -1,6 +1,6 @@
 import type { Student } from './types';
 
-export const ALL_STUDENTS: Student[] = [
+export const DEFAULT_STUDENTS: Student[] = [
   { id: 'S001', name: 'Aarav Sharma' },
   { id: 'S002', name: 'Diya Patel' },
   { id: 'S003', name: 'Rohan Singh' },

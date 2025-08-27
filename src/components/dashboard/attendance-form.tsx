@@ -11,8 +11,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, UploadCloud, UserCheck, UserX, AlertTriangle, PartyPopper } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import type { AttendanceRecord } from "@/lib/types";
-import { ALL_STUDENTS } from "@/lib/data";
+import type { AttendanceRecord, Student } from "@/lib/types";
+import { DEFAULT_STUDENTS } from "@/lib/data";
 import { format } from "date-fns";
 import { Separator } from "../ui/separator";
 
@@ -24,6 +24,8 @@ export default function AttendanceForm() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const [attendanceRecords, setAttendanceRecords] = useLocalStorage<AttendanceRecord[]>("attendanceRecords", []);
+  const [students] = useLocalStorage<Student[]>("students", DEFAULT_STUDENTS);
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -69,7 +71,7 @@ export default function AttendanceForm() {
     if (!result) return;
     const today = format(new Date(), 'yyyy-MM-dd');
 
-    const newRecords: AttendanceRecord[] = ALL_STUDENTS.map(student => {
+    const newRecords: AttendanceRecord[] = students.map(student => {
       const isPresent = result.attendedStudents.some(attendedStudent => 
         student.name.toLowerCase() === attendedStudent.toLowerCase()
       );
